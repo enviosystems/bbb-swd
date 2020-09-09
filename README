@@ -1,0 +1,200 @@
+BeagleBoneGreen SWD - a practical tool for computing freedom
+
+					    		Version 0.04
+							  2018-08-22
+							Niibe Yutaka
+					     Flying Stone Technology
+
+BeagleBoneGreen SWD
+===================
+
+BeagleBoneGreen SWD (BBG-SWD) is a tool to control SWD protocol by
+BeagleBoneGreen or PocketBeagle.
+
+
+Note for release 0.04
+=====================
+
+The patches are against OpenOCD 0.10.0.
+
+	0001-jtag-drivers-bbg-swd-New-SWD-driver.patch
+	0002-jtag-bbg-swd-Fix-bbg_swd_interface_init-and-bbg_swd_.patch
+	0003-target-cortex_m-Set-do_reconnect-at-deassert.patch
+	0004-target-cortex-m-More-wait-tick.patch
+
+The BBG-SWD driver is ready for use.  It is tested with FST-01G
+(STM32F103), FSM-55 (STM32F030) and prototype of FS-BB48 (KL27Z256).
+
+Use of "bone-kernel" is assumed for UIO user space PRUSS driver.
+
+It is also tested with PocketBeagle.
+
+The delay constant in pru-swd.p is changed for speed.  And I modified
+original OpenOCD Cortex-M target, so that it works for my boards.
+
+
+Future Works
+============
+
+It would be good to support different speed for communication.
+
+
+The purpose
+===========
+
+It gives (back) us the control for our computing (freedom), again.
+
+
+Pins for SWD access
+===================
+
+For BBG
+-------
+
+SWD-DIO		P8_11
+SWD-CLK		P8_12
+SRST		P8_15
+
+Pinmux Configuration
+
+    # echo gpio >/sys/devices/platform/ocp/ocp:P8_11_pinmux/state
+    # echo gpio >/sys/devices/platform/ocp/ocp:P8_12_pinmux/state
+    # echo gpio_pu >/sys/devices/platform/ocp/ocp:P8_15_pinmux/state
+
+
+For PocketBeagle
+----------------
+
+SWD-DIO		P2_33
+SWD-CLK		P2_24
+SRST		P2_18
+3V3		P2_23
+GND		P2_21
+
+Pinmux Configuration
+
+    # echo gpio >/sys/devices/platform/ocp/ocp:P2_24_pinmux/state
+    # echo gpio >/sys/devices/platform/ocp/ocp:P2_33_pinmux/state
+    # echo gpio_pu >/sys/devices/platform/ocp/ocp:P2_18_pinmux/state
+
+
+
+The methodology
+===============
+
+It takes advantage of using PRUSS (Programmable Realtime Unit
+SubSytem) on the processor, so that the SWD communication could be
+reliable, accurate and fast.
+
+It assumes use of PRUSSDRV user space library with UIO user space
+PRUSS driver.
+
+I use "bone-kernel" for that.
+
+
+Software License
+================
+
+The program pru-swd.p is distributed under GPLv3+.
+
+The OpenOCD patch  is under GPLv2+.
+
+
+Patches for OpenOCD
+===================
+
+The patches are: 
+
+	0001-jtag-drivers-bbg-swd-New-SWD-driver.patch
+	0002-jtag-bbg-swd-Fix-bbg_swd_interface_init-and-bbg_swd_.patch
+	0003-target-cortex_m-Set-do_reconnect-at-deassert.patch
+	0004-target-cortex-m-More-wait-tick.patch
+
+Please apply those patches to OpenOCD 0.10.0.
+
+Then, you can configure BBG-SWD driver by the --enable-bbg-swd option.
+
+    ./configure --enable-bbg-swd
+
+You can use it with a configuration like:
+
+-------------------------- File: bbg-swd.cfg
+interface bbg-swd
+transport select swd
+--------------------------
+
+The invacatio of command is something like this:
+
+    $ openocd -f  bbg-swd.cfg -f target/stm32f1x.cfg
+
+The above is the case for FST-01.
+
+
+For FS-BB48 (which uses Freescale's KL27Z256), I use following configuration.
+
+-------------------------- File: kl27-bbg-swd.cfg
+interface bbg-swd
+set CHIPNAME kl27
+source [find target/klx.cfg]
+reset_config srst_only separate srst_nogate srst_push_pull connect_assert_srst
+--------------------------
+
+For FSM-55,  I use following configuration.
+
+-------------------------- File: fsm-55-bbg-swd.cfg
+interface bbg-swd
+source [find target/stm32f0x.cfg]
+reset_config srst_only srst_nogate connect_assert_srst
+-------------------------- 
+
+
+Request-Response between PRUSS
+==============================
+
+FORMAT:
+  Request:
+	1-byte: CMD
+	arg...
+
+  Response:
+	value...
+
+Last three bits are valid for CMD.
+
+	HALT		0
+	BLINK		1
+	GPIO_OUT	2
+	GPIO_IN		3
+	SIG_IDLE	4
+	SIG_GEN		5
+	READ_REG	6
+	WRITE_REG	7
+
+
+HALT(): none
+	finish execution of PRU
+
+BLINK(delay, counts, led-bit): none
+	Blink LED
+
+SIG_IDLE(count): none
+	submit idle(=LOW) for COUNT cycles, strobing SWD-CLK
+
+SIG_GEN(bit-len, data...): none
+	submit signal pattern to SWD-DIO, strobing SWD-CLK
+
+READ_REG(cmd): parity-and-ack, value
+	execute SWD read register transaction
+
+WRITE_REG(cmd,value): ack
+	execute SWD write register transaction
+
+GPIO_OUT(bit, value): none
+	control GPIO signal directly, output
+
+GPIO_IN(): value
+	control GPIO signal directly, input
+
+
+Enjoy,
+-- 
