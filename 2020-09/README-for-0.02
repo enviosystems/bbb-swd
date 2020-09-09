@@ -1,0 +1,35 @@
+The patch is: 0001-Add-new-SWD-driver-bbg-swd.patch
+
+This was for OpenOCD, and it was against the commit: ::
+
+        406f4d1c68330e3bf8d9db4e402fd8802a5c79e2
+
+The root file system I use was based on Debian Jessie.  /ID.txt said: ::
+
+        BeagleBoard.org Debian Image 2016-01-24
+
+The kernel in use was 4.4.5-bone5.
+
+For BBG-SWD, "ti-rt" kernel does not work well because PRUSS support
+is different in this kernel.
+
+I put the program for PRUSS in: ::
+
+        /usr/local/share/openocd/bbg-swd/pru-swd.bin
+
+-- 
+
+Apply patch
+-----
+To apply the patch, you need to first, validate the patch
+
+	cd <openocd_source_directory>
+	git apply --stat <path_to_patch>/<patch>
+
+A dry run is recommended before applying patch to the project
+
+	git apply --check <path_to_patch>/<patch>
+
+If no error is shown above, then you can safely apply the patch
+
+	patch -p1 < <path_to_patch>/<patch>
