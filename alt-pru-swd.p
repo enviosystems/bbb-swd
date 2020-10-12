@@ -41,7 +41,7 @@
 #define CT_PRUDRAM	C24
 
 //  PRU Control register
-#define PRU1_CTRL 0x00024000	// address
+#define PRU1_CTRL 0x00022000	// address
 #define WAKEUP_EN 8		// offset
 
 // PRU CFG registers
