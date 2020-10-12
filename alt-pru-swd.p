@@ -63,10 +63,10 @@
 
 #define GPIO2_BASE_0100   0x481AC000
 // offsets
-#define GPIO_OE			0x134
-#define GPIO_DATAIN		0x138
-#define GPIO_CLEARDATAOUT	0x190
-#define GPIO_SETDATAOUT		0x194
+#define GPIO_OE			0x34
+#define GPIO_DATAIN		0x38
+#define GPIO_CLEARDATAOUT	0x90
+#define GPIO_SETDATAOUT		0x94
 
 // LED
 // bit 21: USR0, 22: USR1, 23: USR2, 24: USR3
