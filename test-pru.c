@@ -61,16 +61,16 @@ pru_request_cmd (uint32_t *p)
    */
   asm volatile ("" : : : "memory");
 
-  /* Wakeup the PRU0 which sleeps.  */
-  prussdrv_pru_send_event (ARM_PRU0_INTERRUPT);
+  /* Wakeup the PRU1 which sleeps.  */
+  prussdrv_pru_send_event (ARM_PRU1_INTERRUPT);
   /*
    * prussdrv_pru_send_event may be buggy, I only see the write access
    * to memory, but no cache flushing.
    */
 
-  /* Wait PRU0 response.  */
+  /* Wait PRU1 response.  */
   prussdrv_pru_wait_event (PRU_EVTOUT_0);
-  prussdrv_pru_clear_event (PRU_EVTOUT_0, PRU0_ARM_INTERRUPT);
+  prussdrv_pru_clear_event (PRU_EVTOUT_0, PRU1_ARM_INTERRUPT);
 
   if ((p[0] & 0xff) == 0x07 && ((p[0] >> 8) & 0x04) == 0)
     printf ("Request (%08x:%08x) done: %d\n", p[0], p[1], p[18]);
@@ -345,7 +345,7 @@ main (void)
   prussdrv_pruintc_init (&pruss_intc_initdata);
 
   /* Initialize PRU memory access from Host.  */
-  prussdrv_map_prumem (PRUSS0_PRU0_DATARAM, &pru_data_ram);
+  prussdrv_map_prumem (PRUSS0_PRU1_DATARAM, &pru_data_ram);
   p = pru_data_ram;
 
   /* Execute example on PRU */
