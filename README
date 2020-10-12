@@ -118,6 +118,10 @@ The kernel in use was 4.4.145-bone-rt-r23.
 For BBG-SWD, "ti-rt" kernel does not work well because PRUSS support
 is different in this kernel.
 
+To build pru-swd.p run
+
+		pasm -b -V3 pru-swd.p
+
 I put the program for PRUSS in: ::
 
         /usr/local/share/openocd/bbg-swd/pru-swd.bin
