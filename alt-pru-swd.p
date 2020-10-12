@@ -38,7 +38,7 @@
 
 // Constant Table
 #define CT_PRUCFG	C4
-#define CT_PRUDRAM	C24
+#define CT_PRUDRAM	C25
 
 //  PRU Control register
 #define PRU1_CTRL 0x00024000	// address
