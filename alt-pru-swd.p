@@ -33,8 +33,8 @@
 .endm
 
 
-#define PRU1_ARM_INTERRUPT	19
-#define ARM_PRU1_INTERRUPT	21
+#define PRU1_ARM_INTERRUPT	20
+#define ARM_PRU1_INTERRUPT	22
 
 // Constant Table
 #define CT_PRUCFG	C4
