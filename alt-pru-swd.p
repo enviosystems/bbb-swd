@@ -55,9 +55,9 @@
 // P8_30 GPIO2_25 SWD_DIO
 // P8_29 GPIO2_23 SWD_CLK
 // P8_28 GPIO2_24 nRST
-#define SWD_NRST_BIT 24
-#define SWD_DIO_BIT 25
-#define SWD_CLK_BIT 23
+#define SWD_NRST_BIT 10
+#define SWD_DIO_BIT 11
+#define SWD_CLK_BIT 9
 #define SWD_DIO (1<<SWD_DIO_BIT)
 #define SWD_CLK (1<<SWD_CLK_BIT)
 
