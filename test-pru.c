@@ -334,7 +334,7 @@ main (void)
   prussdrv_init ();
 
   /* Open PRU interrupt to Host.  */
-  r = prussdrv_open (PRU_EVTOUT_0);
+  r = prussdrv_open (PRU_EVTOUT_1);
   if (r < 0)
     {
       printf ("prussdrv_open open failed: %d\n", r);
