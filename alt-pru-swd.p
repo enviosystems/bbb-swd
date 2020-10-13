@@ -33,15 +33,15 @@
 .endm
 
 
-#define PRU1_ARM_INTERRUPT	19
-#define ARM_PRU1_INTERRUPT	21
+#define PRU0_ARM_INTERRUPT	19
+#define ARM_PRU0_INTERRUPT	21
 
 // Constant Table
 #define CT_PRUCFG	C4
 #define CT_PRUDRAM	C24
 
 //  PRU Control register
-#define PRU1_CTRL 0x00024000	// address
+#define PRU0_CTRL 0x00022000	// address
 #define WAKEUP_EN 8		// offset
 
 // PRU CFG registers
@@ -52,16 +52,14 @@
 #define INTC	  0x00020000	// address
 #define INTC_SICR	0x24	// offset
 
-// P8_30 GPIO2_25 SWD_DIO
-// P8_29 GPIO2_23 SWD_CLK
-// P8_28 GPIO2_24 nRST
-#define SWD_NRST_BIT 10
-#define SWD_DIO_BIT 11
-#define SWD_CLK_BIT 9
+// P8_12 GPIO1_12 SWD_DIO
+// P8_11 GPIO1_13 SWD_CLK
+#define SWD_DIO_BIT 12
+#define SWD_CLK_BIT 13
 #define SWD_DIO (1<<SWD_DIO_BIT)
 #define SWD_CLK (1<<SWD_CLK_BIT)
 
-#define GPIO2_BASE_0100   0x481AC000
+#define GPIO1_BASE_0100   0x4804c100
 // offsets
 #define GPIO_OE			0x34
 #define GPIO_DATAIN		0x38
@@ -124,30 +122,28 @@ START:
 	CLR	r0, r0, STANDBY_INIT
 	SBCO	r0, CT_PRUCFG, SYSCFG, 4
 
-	// Configure C24 to 0x00000000 (PRU1 DRAM)
+	// Configure C24 to 0x00000000 (PRU0 DRAM)
 	LDI	r0, #0
 	MOV	r1, CTBIR_0
 	SBBO	r0, r1, 0, 4
 
 	// Registers for constant values
-	MOV	r5, #GPIO2_BASE_0100
+	MOV	r5, #GPIO1_BASE_0100
 	LDI	r6, #SWD_DIO
 	LDI	r7, #SWD_CLK
 
-	// Initialize NRST, SWD_DIO and SWD_CLK pins
+	// Initialize SWD_DIO and SWD_CLK pins
 	DRIVE_DIO_HIGH
 	DRIVE_CLK_HIGH
-	// NRST_oe <= Output
 	// SWD_DIO_oe <= Output
 	// SWD_CLK_oe <= Output
 	LBBO	r0, r5, GPIO_OE, 4
-	CLR	r0, SWD_NRST_BIT
 	CLR	r0, SWD_DIO_BIT
 	CLR	r0, SWD_CLK_BIT
 	SBBO	r0, r5, GPIO_OE, 4
 
 	// Wakeup control configuration
-	MOV	r0, #PRU1_CTRL
+	MOV	r0, #PRU0_CTRL
 	MOV	r1, #0xffffffff
 	SBBO	r1, r0, WAKEUP_EN, 4
 
@@ -338,14 +334,14 @@ COMMAND_DONE:
 
 	// Clear the event
 	MOV	r1, #INTC
-	LDI	r2, #ARM_PRU1_INTERRUPT
+	LDI	r2, #ARM_PRU0_INTERRUPT
 	SBBO	r2, r1, INTC_SICR, 4
 
 	// Notify Host
-	MOV	r31.b0, PRU1_ARM_INTERRUPT+16
+	MOV	r31.b0, PRU0_ARM_INTERRUPT+16
 
 COMMAND_LOOP:
-	// Wait until host wakes up PRU1
+	// Wait until host wakes up PRU0
 	SLP	1
 
 	// Load values from data RAM into register R0
@@ -357,7 +353,7 @@ COMMAND_LOOP:
 L_000:	// Command HALT
 	MOV	r0, #0
 	SBCO	r0, CT_PRUDRAM, 64, 4
-	MOV	r31.b0, PRU1_ARM_INTERRUPT+16
+	MOV	r31.b0, PRU0_ARM_INTERRUPT+16
 	HALT
 L_001:	// Command BLINK
 	QBA	BLINK
