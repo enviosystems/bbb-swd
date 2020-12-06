@@ -171,6 +171,8 @@ MGM21 flashing examples
 There are several binaries available for MGM21 flashing in Binaries folder. To flash `ncp-uart-sw.hex` file simply run
 
     $ openocd -f  flash-ncp-uart-sw.cfg
+    
+IMPORTANT: You need to reset th MCU manually after flashing, as at the moment this is not handling the RESET pin
 
 This is a binary for Zigbee NCP UART. To test it on UART1 run
 
@@ -213,7 +215,7 @@ MQTT Client ID = gw680AE2FFFE38C006
 Found 0 files
 
 ```
-NOTE: You need to reset th MCU manually after flashing, as at the moment this is not handling the RESET pin
+
 
 Request-Response between PRUSS
 ==============================
