@@ -174,7 +174,7 @@ There are several binaries available for MGM21 flashing in Binaries folder. To f
 
 This is a binary for Zigbee NCP UART. To test it on UART1 run
 
-	$ siliconlabsgateway -n 1 -p /dev/ttyS1
+	$ siliconlabsgateway -n 0 -p /dev/ttyS1
 
 Tho output should be something like this:
 ```
