@@ -1,3 +1,6 @@
 [submodule "openocd-code"]
 	path = openocd-code
 	url = https://github.com/salimwp/openocd-code/
+[submodule "am335x_pru_package"]
+	path = am335x_pru_package
+	url = https://github.com/beagleboard/am335x_pru_package
