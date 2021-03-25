@@ -1,9 +1,5 @@
 BeagleBoneGreen SWD - a practical tool for computing freedom
 
-					    		Version 0.04
-							  2018-08-22
-							Niibe Yutaka
-					     Flying Stone Technology
 
 BeagleBoneGreen SWD
 ===================
@@ -16,66 +12,17 @@ Note for release 0.04
 =====================
 
 The patches are against OpenOCD 0.10.0.
+```
+bbb_swd_silabs.patch
+```
 
-	0001-jtag-drivers-bbg-swd-New-SWD-driver.patch
-	0002-jtag-bbg-swd-Fix-bbg_swd_interface_init-and-bbg_swd_.patch
-	0003-target-cortex_m-Set-do_reconnect-at-deassert.patch
-	0004-target-cortex-m-More-wait-tick.patch
-
-The BBG-SWD driver is ready for use.  It is tested with FST-01G
-(STM32F103), FSM-55 (STM32F030) and prototype of FS-BB48 (KL27Z256).
+The BBG-SWD driver is ready for use.  It is tested with MGM210P MCU
 
 Use of "bone-kernel" is assumed for UIO user space PRUSS driver.
-
-It is also tested with PocketBeagle.
 
 The delay constant in pru-swd.p is changed for speed.  And I modified
 original OpenOCD Cortex-M target, so that it works for my boards.
 
-
-Future Works
-============
-
-It would be good to support different speed for communication.
-
-
-The purpose
-===========
-
-It gives (back) us the control for our computing (freedom), again.
-
-
-Pins for SWD access
-===================
-
-For BBG
--------
-
-SWD-DIO		P8_11
-SWD-CLK		P8_12
-SRST		P8_15
-
-Pinmux Configuration
-
-    # echo gpio >/sys/devices/platform/ocp/ocp:P8_11_pinmux/state
-    # echo gpio >/sys/devices/platform/ocp/ocp:P8_12_pinmux/state
-    # echo gpio_pu >/sys/devices/platform/ocp/ocp:P8_15_pinmux/state
-
-
-For PocketBeagle
-----------------
-
-SWD-DIO		P2_33
-SWD-CLK		P2_24
-SRST		P2_18
-3V3		P2_23
-GND		P2_21
-
-Pinmux Configuration
-
-    # echo gpio >/sys/devices/platform/ocp/ocp:P2_24_pinmux/state
-    # echo gpio >/sys/devices/platform/ocp/ocp:P2_33_pinmux/state
-    # echo gpio_pu >/sys/devices/platform/ocp/ocp:P2_18_pinmux/state
 
 
 
@@ -103,7 +50,7 @@ The OpenOCD patch  is under GPLv2+.
 Patches for OpenOCD
 ===================
 
-The patch is: 0001-Add-new-SWD-driver-bbg-swd.patch
+The patch is: `bbb_swd_silabs.patch`
 
 This was for OpenOCD, and it was against the commit: ::
 
@@ -113,23 +60,29 @@ The root file system I use was based on Debian Jessie.  /ID.txt said: ::
 
         BeagleBoard.org Debian Image 2016-01-24
 
-The kernel in use was 4.4.145-bone-rt-r23.
+This patch will add support for SWD utlizing PRU module, as well as add support for
+MGM210P MCU family (ARM Cortex M33) of Silicon Labs
+
+The kernel in use was `4.4.145-bone-rt-r23`.
 
 For BBG-SWD, "ti-rt" kernel does not work well because PRUSS support
 is different in this kernel.
 
-To build pru-swd.p run
-
-		pasm -b -V3 pru-swd.p
-
-I put the program for PRUSS in: ::
-
-        /usr/local/share/openocd/bbg-swd/pru-swd.bin
-
 -- 
 
-Apply patch
+Installation
 -----
+Clone this repository in Beaglebone, together with all submodules
+```
+git clone https://github.com/enviosystems/bbb-swd
+cd bbb-swd
+git submodule update --init --recursive
+```
+To install PRU driver simply run
+```
+make -f am335x_pru_package/Makefile install
+```
+
 To apply the patch, you need to first, validate the patch
 
 	cd <openocd_source_directory>
@@ -145,38 +98,34 @@ If no error is shown above, then you can safely apply the patch
 
 
 
-Then, you can configure BBG-SWD driver by the --enable-bbg-swd option.
+Then, you can configure BBG-SWD driver by the `--enable-bbg-swd` option and build OpenOCD
 
     ./configure --enable-bbg-swd
+    sudo make install
+    
 
-You can use it with a configuration like:
+To build mgm-pru-swd.p run
+```
+am335x_pru_package/pru_sw/utils/pasm -b -V3 mgm-pru-swd.p
+```
+I put the program for PRUSS in:
+```
+sudo mv mgm-pru-swd.bin /usr/local/share/openocd/bbg-swd/pru-swd.bin
+```
 
--------------------------- File: bbg-swd.cfg
-interface bbg-swd
-transport select swd
---------------------------
-
-The invacatio of command is something like this:
-
-    $ openocd -f  bbg-swd.cfg -f target/stm32f1x.cfg
-
-The above is the case for FST-01.
-
-
-For FS-BB48 (which uses Freescale's KL27Z256), I use following configuration.
 
 MGM21 flashing examples
 ==============================
 
 There are several binaries available for MGM21 flashing in Binaries folder. To flash `ncp-uart-sw.hex` file simply run
 
-    $ openocd -f  flash-ncp-uart-sw.cfg
+    openocd -f  flash-ncp-uart-sw.cfg
     
 IMPORTANT: You need to reset th MCU manually after flashing, as at the moment this is not handling the RESET pin
 
-This is a binary for Zigbee NCP UART. To test it on UART1 run
+This is a binary for Zigbee NCP UART. To test it on UART1 run (assuming that Zigbee GW App is already installed)
 
-    $ siliconlabsgateway -n 0 -p /dev/ttyS1
+    siliconlabsgateway -n 0 -p /dev/ttyS1
 
 Tho output should be something like this:
 ```
@@ -263,7 +212,3 @@ GPIO_OUT(bit, value): none
 
 GPIO_IN(): value
 	control GPIO signal directly, input
-
-
-Enjoy,
--- 
