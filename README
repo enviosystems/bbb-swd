@@ -1,12 +1,10 @@
-BeagleBoneGreen SWD
-===================
+# BeagleBoneGreen SWD
 
 BeagleBoneGreen SWD (BBG-SWD) is a tool to control SWD protocol by
 BeagleBoneGreen or PocketBeagle.
 
 
-Note for release 0.04
-=====================
+# Note for release 0.04
 
 The patches are against OpenOCD 0.10.0.
 ```shell=
@@ -23,8 +21,7 @@ original OpenOCD Cortex-M target, so that it works for my boards.
 
 
 
-The methodology
-===============
+# The methodology
 
 It takes advantage of using PRUSS (Programmable Realtime Unit
 SubSytem) on the processor, so that the SWD communication could be
@@ -36,16 +33,14 @@ PRUSS driver.
 I use "bone-kernel" for that.
 
 
-Software License
-================
+# Software License
 
 The program pru-swd.p is distributed under GPLv3+.
 
 The OpenOCD patch  is under GPLv2+.
 
 
-Patches for OpenOCD
-===================
+# Patches for OpenOCD
 
 The patch is: `bbb_swd_silabs.patch`
 
@@ -66,8 +61,8 @@ For BBG-SWD, "ti-rt" kernel does not work well because PRUSS support
 is different in this kernel.
 
 
-Installation
-===================
+# Installation
+
 Clone this repository in Beaglebone, together with all submodules
 ```shell=
 git clone https://github.com/enviosystems/bbb-swd
@@ -81,23 +76,23 @@ make -f am335x_pru_package/Makefile install
 
 To apply the patch, you need to first, validate the patch
 ```shell=
-	cd <openocd_source_directory>
-	git apply --stat <path_to_patch>/<patch>
+cd <openocd_source_directory>
+git apply --stat <path_to_patch>/<patch>
 ```
 A dry run is recommended before applying patch to the project
 ```shell=
-	git apply --check <path_to_patch>/<patch>
+git apply --check <path_to_patch>/<patch>
 ```
 If no error is shown above, then you can safely apply the patch
 ```shell=
-	patch -p1 < <path_to_patch>/<patch>
+patch -p1 < <path_to_patch>/<patch>
 ```
 
 
 Then, you can configure BBG-SWD driver by the `--enable-bbg-swd` option and build OpenOCD
 ```shell=
-    ./configure --enable-bbg-swd
-    sudo make install
+./configure --enable-bbg-swd
+sudo make install
  ```   
 
 To build mgm-pru-swd.p run
@@ -110,8 +105,7 @@ sudo mv mgm-pru-swd.bin /usr/local/share/openocd/bbg-swd/pru-swd.bin
 ```
 
 
-MGM21 flashing examples
-==============================
+# MGM21 flashing examples
 
 There are several binaries available for MGM21 flashing in Binaries folder. To flash `ncp-uart-sw.hex` file simply run
 ```shell=
@@ -161,8 +155,8 @@ Found 0 files
 ```
 
 
-Request-Response between PRUSS
-==============================
+# Request-Response between PRUSS
+
 
 FORMAT:
   Request:
