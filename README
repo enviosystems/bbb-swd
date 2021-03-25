@@ -1,6 +1,3 @@
-BeagleBoneGreen SWD - a practical tool for computing freedom
-
-
 BeagleBoneGreen SWD
 ===================
 
@@ -12,7 +9,7 @@ Note for release 0.04
 =====================
 
 The patches are against OpenOCD 0.10.0.
-```
+```shell=
 bbb_swd_silabs.patch
 ```
 
@@ -68,48 +65,47 @@ The kernel in use was `4.4.145-bone-rt-r23`.
 For BBG-SWD, "ti-rt" kernel does not work well because PRUSS support
 is different in this kernel.
 
--- 
 
 Installation
------
+===================
 Clone this repository in Beaglebone, together with all submodules
-```
+```shell=
 git clone https://github.com/enviosystems/bbb-swd
 cd bbb-swd
 git submodule update --init --recursive
 ```
 To install PRU driver simply run
-```
+```shell=
 make -f am335x_pru_package/Makefile install
 ```
 
 To apply the patch, you need to first, validate the patch
-
+```shell=
 	cd <openocd_source_directory>
 	git apply --stat <path_to_patch>/<patch>
-
+```
 A dry run is recommended before applying patch to the project
-
+```shell=
 	git apply --check <path_to_patch>/<patch>
-
+```
 If no error is shown above, then you can safely apply the patch
-
+```shell=
 	patch -p1 < <path_to_patch>/<patch>
-
+```
 
 
 Then, you can configure BBG-SWD driver by the `--enable-bbg-swd` option and build OpenOCD
-
+```shell=
     ./configure --enable-bbg-swd
     sudo make install
-    
+ ```   
 
 To build mgm-pru-swd.p run
-```
+```shell=
 am335x_pru_package/pru_sw/utils/pasm -b -V3 mgm-pru-swd.p
 ```
 I put the program for PRUSS in:
-```
+```shell=
 sudo mv mgm-pru-swd.bin /usr/local/share/openocd/bbg-swd/pru-swd.bin
 ```
 
@@ -118,17 +114,17 @@ MGM21 flashing examples
 ==============================
 
 There are several binaries available for MGM21 flashing in Binaries folder. To flash `ncp-uart-sw.hex` file simply run
-
-    openocd -f  flash-ncp-uart-sw.cfg
-    
+```shell=
+openocd -f  flash-ncp-uart-sw.cfg
+```   
 IMPORTANT: You need to reset th MCU manually after flashing, as at the moment this is not handling the RESET pin
 
 This is a binary for Zigbee NCP UART. To test it on UART1 run (assuming that Zigbee GW App is already installed)
-
-    siliconlabsgateway -n 0 -p /dev/ttyS1
-
-Tho output should be something like this:
+```shell=
+siliconlabsgateway -n 0 -p /dev/ttyS1
 ```
+Tho output should be something like this:
+```shell=
 Reset info: 11 (SOFTWARE)
 ezsp ver 0x08 stack type 0x02 stack ver. [6.7.7 GA build 347]
 Ezsp Config: set security level to 0x0005:Success: set
@@ -162,7 +158,6 @@ HA Gateweay EUI64 = 680AE2FFFE38C006
 MQTT Client Init
 MQTT Client ID = gw680AE2FFFE38C006
 Found 0 files
-
 ```
 
 
@@ -212,3 +207,4 @@ GPIO_OUT(bit, value): none
 
 GPIO_IN(): value
 	control GPIO signal directly, input
+
