@@ -91,7 +91,7 @@ patch -p1 < <path_to_patch>/<patch>
 
 Then, you can configure BBG-SWD driver by the `--enable-bbg-swd` option and build OpenOCD
 ```shell=
-./configure --enable-bbg-swd
+./configure --enable-bbg-swd --disable-werror
 sudo make install
  ```   
 
